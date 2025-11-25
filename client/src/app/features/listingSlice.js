@@ -8,7 +8,7 @@ const listingSlice = createSlice({
         userListings: dummyListings,
         balance:{
             earned: 0,
-            withdrown:0,
+            withdrawn:0,
             available:0,
         }
     },

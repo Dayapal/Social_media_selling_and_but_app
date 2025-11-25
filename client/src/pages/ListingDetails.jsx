@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getProfileLink, platformIcons } from '../assets/assets';
-import { useSelector } from 'react-redux';
-import { ArrowLeftIcon, ArrowUpRightFromSquare, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSignIcon, Eye, LineChart, Loader2Icon, Users } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ArrowLeftIcon, ArrowUpRightFromSquare, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSignIcon, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
+import { setChat } from '../app/features/chatSlice';
 
 const ListingDetails = () => {
+   const dispatch = useDispatch()
   const navigate = useNavigate()
   const currency = import.meta.env.VITE_CURRENCY || '$';
   const [listing, setListing] = useState(null)
@@ -17,6 +19,15 @@ const ListingDetails = () => {
   const images = listing?.images || [];
   const prevSlide = () => setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1))
   const nextSlide = () => setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+
+
+  const purchaseAccount = async() =>{
+    
+  }
+  const loadChatbox =() =>{
+    dispatch(setChat({listing:listing}))
+
+  }
 
   useEffect(() => {
     const listing = listings.find((listing) => listing.id === listingId);
@@ -133,7 +144,7 @@ const ListingDetails = () => {
 
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4 p-4 text-center'>
               <div>
-                <Users className='mx-auto text-gray-400 w-5 h-5 mb-1'/>
+                <Users className='mx-auto text-gray-400 w-5 h-5 mb-1' />
                 <p className='font-semibold text-gray-800'>
                   {listing.followers_count?.toLocaleString()}
                 </p>
@@ -142,16 +153,16 @@ const ListingDetails = () => {
 
 
               <div>
-                <LineChart className='mx-auto text-gray-400 w-5 h-5 mb-1'/>
+                <LineChart className='mx-auto text-gray-400 w-5 h-5 mb-1' />
                 <p className='font-semibold text-gray-800'>
                   {listing.engagement_rate}%
                 </p>
                 <p className='text-xs text-gray-500'>Engagement</p>
               </div>
 
-              
+
               <div>
-                <Eye className='mx-auto text-gray-400 w-5 h-5 mb-1'/>
+                <Eye className='mx-auto text-gray-400 w-5 h-5 mb-1' />
                 <p className='font-semibold text-gray-800'>
                   {listing.monthly_views?.toLocaleString()}
                 </p>
@@ -160,7 +171,7 @@ const ListingDetails = () => {
 
 
               <div>
-                <Calendar className='mx-auto text-gray-400 w-5 h-5 mb-1'/>
+                <Calendar className='mx-auto text-gray-400 w-5 h-5 mb-1' />
                 <p className='font-semibold text-gray-800'>
                   {new Date(listing.createdAt).toLocaleDateString()}
                 </p>
@@ -177,13 +188,92 @@ const ListingDetails = () => {
             <div className='p-4 border-b border-gray-100'>
               <h4 className='font-semibold text-gray-800'>Description</h4>
             </div>
-            <div>{listing.description}</div>
+            <div className='p-4 text-sm text-gray-600'>{listing.description}</div>
+          </div>
+
+          {/* Additional Details */}
+          <div className='bg-white rounded-xl border border-gray-200 mb-5 '>
+            <div className='p-4 border-b border-gray-100'>
+              <h4 className='font-semibold text-gray-800'>Additional Details</h4>
+            </div>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6 p-4 text-sm'>
+
+              <div>
+                <p className='text-gray-500'>Niche</p>
+                <p className='font-medium capitalize'>{listing.niche} </p>
+              </div>
+
+              <div>
+                <p className='text-gray-500'>Primary Country</p>
+                <p className='flex items-center font-medium'>
+                  <MapPin className='size-4 mr-1 text-gray-400' />{listing.country} </p>
+              </div>
+
+              <div>
+                <p className='text-gray-500'>Audience Age</p>
+                <p className=' font-medium'>
+                  {listing.age_range} </p>
+              </div>
+
+              <div>
+                <p className='text-gray-500'>Platform Verified</p>
+                <p className=' font-medium'>
+                  {listing.platformAssured ? "Yes" : "No"} </p>
+              </div>
+
+              <div>
+                <p className='text-gray-500'>Monetization</p>
+                <p className=' font-medium'>
+                  {listing.monetized ? "Enabled" : "Disabled"} </p>
+              </div>
+
+              <div>
+                <p className='text-gray-500'>Status</p>
+                <p className=' font-medium capitalize'>
+                  {listing.status} </p>
+              </div>
+
+            </div>
           </div>
 
         </div>
         {/* Seller Info & Purchase Options */}
-        <div></div>
+
+        <div className='bg-white min-w-full md:min-w-[370px] rounded-xl border
+        border-gray-200 p-5 max-md:mb-10'>
+          <h4 className='font-semibold text-gray-800 mb-4'>Seller Information</h4>
+          <div className='flex items-center gap-3 mb-2'>
+            <img src={listing.owner?.image} alt="seller image" className='size-10 rounded-full' />
+
+            <div>
+              <p className='font-medium text-gray-800'>{listing.owner?.name}</p>
+              <p className='text-sm text-gray-500'>{listing.owner?.email}</p>
+            </div>
+          </div>
+          <div className='flex items-center justify-between text-sm text-gray-600 mb-4'>
+            <p>Member Since <span className='font-medium'>{new Date(listing.owner?.createdAt).toLocaleDateString()}</span></p>
+          </div>
+          <button onClick={loadChatbox} className='w-full bg-indigo-600 text-white py-2 rounded-lg
+          hover:bg-indigo-700 transition text-sm font-medium flex items-center justify-center gap-2'>
+            <MessageSquareMoreIcon className='size-4' />Chat
+          </button>
+          {listing.isCredentialChanged && (
+              <button onClick={purchaseAccount} className='w-full mt-2 bg-indigo-600 text-white py-2 rounded-lg
+          hover:bg-indigo-700 transition text-sm font-medium flex items-center justify-center gap-2'>
+            <ShoppingBagIcon className='size-4' />Purchase
+          </button>
+          )}
+        </div>
       </div>
+
+       {/* Footer */}
+       <div className='bg-white border-t border-gray-200 p-4 text-center mt-28'>
+        <p className='text-sm text-gray-500'>
+          c 2025 <span className='text-indigo-600'>Dedicated Daya Pal</span>. All rights reserved.
+        </p>
+
+       </div>
+
 
     </div>
 
