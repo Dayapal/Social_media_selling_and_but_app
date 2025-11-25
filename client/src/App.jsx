@@ -11,24 +11,26 @@ import Home from './pages/Home'
 import Loading from './pages/Loading'
 import Navbar from './components/Navbar'
 import ChatBox from './components/ChatBox'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
- const {pathname} = useLocation()
+  const { pathname } = useLocation()
   return (
     <div>
-      {!pathname.includes('/admin') && <Navbar/>}
+      <Toaster />
+      {!pathname.includes('/admin') && <Navbar />}
       <Routes>
-        <Route  path='/' element={<Home/>}/>
-        <Route  path='/marketplace' element={<Marketplace/>}/>
-        <Route  path='/my-listings' element={<MyListings/>}/>
-        <Route  path='/listing/:listingId' element={<ListingDetails/>}/>
-        <Route  path='/create-listing' element={<ManageListing/>}/>
-        <Route  path='/edit-listing/:id' element={<ManageListing/>}/>
-        <Route  path='/messages' element={<Messages/>}/>
-        <Route  path='/my-orders' element={<MyOrders/>}/>
-        <Route  path='/loading' element={<Loading/>}/>
+        <Route path='/' element={<Home />} />
+        <Route path='/marketplace' element={<Marketplace />} />
+        <Route path='/my-listings' element={<MyListings />} />
+        <Route path='/listing/:listingId' element={<ListingDetails />} />
+        <Route path='/create-listing' element={<ManageListing />} />
+        <Route path='/edit-listing/:id' element={<ManageListing />} />
+        <Route path='/messages' element={<Messages />} />
+        <Route path='/my-orders' element={<MyOrders />} />
+        <Route path='/loading' element={<Loading />} />
       </Routes>
-      <ChatBox/>
+      <ChatBox />
     </div>
   )
 }
