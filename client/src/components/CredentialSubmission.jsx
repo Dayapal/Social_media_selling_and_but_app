@@ -26,11 +26,11 @@ const CredentialSubmission = ({ onClose, listing }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-100 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-lg rounded-lg shadow-2xl flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-indigo-400 text-white p-4 rounded-t-lg flex justify-between items-center">
+        <div className="bg-linear-to-r from-indigo-600 to-indigo-400 text-white p-4 rounded-t-lg flex justify-between items-center">
           <div>
             <h3 className="font-semibold text-lg">{listing?.title}</h3>
             <p className="text-sm opacity-90">
