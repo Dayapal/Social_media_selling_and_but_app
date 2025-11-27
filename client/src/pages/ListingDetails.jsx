@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getProfileLink, platformIcons } from '../assets/assets';
 import { useDispatch, useSelector } from 'react-redux';
-import { ArrowLeftIcon, ArrowUpRightFromSquare, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSignIcon, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
+import { ArrowLeftIcon,  ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSignIcon, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
 import { setChat } from '../app/features/chatSlice';
 
 const ListingDetails = () => {
@@ -43,6 +43,7 @@ const ListingDetails = () => {
       </button>
       <div className='flex items-start max-md:flex-col gap-10'>
         <div className='flex-1 max-md:w-full'>
+          
           {/* Top Section  */}
 
           <div className='bg-white rounded-xl border border-gray-200 p-6 mb-5'>
@@ -273,8 +274,6 @@ const ListingDetails = () => {
         </p>
 
        </div>
-
-
     </div>
 
   ) : (
