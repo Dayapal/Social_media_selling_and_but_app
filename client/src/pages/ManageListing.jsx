@@ -3,15 +3,21 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { Loader2 as Loader2Icon, Upload, X as XIcon } from 'lucide-react'
+import { useAuth } from '@clerk/clerk-react'
+import { getAllPublicListing, getAllUserListing } from '../app/features/listingSlice'
+import api from '../configs/axios'
 
 const ManageListing = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const dispatch = useDispatch() // for future save/update actions
   const { userListings = [] } = useSelector((state) => state.listing || {})
+  const { getToken } = useAuth()
+  const dispatch = useDispatch() // for future save/update actions
+
 
   const [loadingListing, setLoadingListing] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+
   const [formData, setFormData] = useState({
     title: "",
     platform: "",
@@ -92,27 +98,77 @@ const ManageListing = () => {
     }
   }, [id, userListings, navigate])
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    // Basic validation example:
-    if (!formData.title?.trim()) {
-      return toast.error("Please add a title")
+    toast.loading("Saving...");
+
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("No token found");
+
+      const dataCopy = structuredClone(formData);
+
+      // EDIT MODE
+      if (isEditing) {
+        dataCopy.images = formData.images.filter((img) => typeof img === "string");
+
+        const formDataInstance = new FormData();
+        formDataInstance.append("accountDetails", JSON.stringify(dataCopy));
+
+        formData.images
+          .filter((img) => typeof img !== "string")
+          .forEach((img) => formDataInstance.append("images", img));
+
+        const { data } = await api.put("/api/listing", formDataInstance, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        toast.dismiss();
+        toast.success(data.message);
+
+        // FIX 👉 Correct dispatch
+        dispatch(getAllUserListing(token));
+        dispatch(getAllPublicListing());
+
+        navigate("/my-listings");
+        return;
+      }
+
+      // CREATE MODE
+      delete dataCopy.images;
+
+      const formDataInstance = new FormData();
+      formDataInstance.append("accountDetails", JSON.stringify(dataCopy));
+
+      formData.images.forEach((img) => {
+        formDataInstance.append("images", img);
+      });
+
+      const { data } = await api.post("/api/listing", formDataInstance, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",  // ⭐ FIXED
+        },
+      });
+
+      toast.dismiss();
+      toast.success(data.message);
+
+      // FIX 👉 Correct dispatch
+      dispatch(getAllUserListing(token));
+      dispatch(getAllPublicListing());
+
+      navigate("/my-listings");
+    } catch (error) {
+      toast.dismiss();
+      toast.error(error?.response?.data?.message || error.message);
     }
+  };
 
-    // TODO: convert File objects to FormData for upload or dispatch redux action
-    // Example placeholder:
-    if (isEditing) {
-      // dispatch(updateListing(id, formData))
-      toast.success("Listing updated (stub)")
-    } else {
-      // dispatch(createListing(formData))
-      toast.success("Listing created (stub)")
-    }
-
-    // navigate away or keep on page
-    navigate('/my-listings')
-  }
 
   if (loadingListing) {
     return (

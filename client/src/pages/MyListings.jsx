@@ -9,15 +9,15 @@ import WithdrawModel from '../components/WithdrawModel';
 
 
 const MyListings = () => {
-  const { userListings, balance } = useSelector((state) => state.listing)
+  const { userListings = [], balance = {} } = useSelector((state) => state.listing)
   const currency = import.meta.env.VITE_CURRENCY || "$";
   const navigate = useNavigate()
   const [showCredentialSubmission, setShowCredentialSubmission] = useState(null)
   const [showWithdrawal, setShowWithdrawal] = useState(null)
 
-  const totalValue = userListings.reduce((sum, listing) => sum + (listing.price || 0), 0);
-  const activeListings = userListings.filter((listing) => listing.stats === 'active').length;
-  const soldListings = userListings.filter((listing) => listing.stats === 'sold').length;
+    const totalValue = userListings.reduce((sum, listing) => sum + (listing.price || 0), 0);
+  const activeListings = userListings.filter((listing) => listing.status === 'active').length;
+  const soldListings = userListings.filter((listing) => listing.status === 'sold').length;
 
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
@@ -92,7 +92,7 @@ const MyListings = () => {
         </button>
       </div>
 
-      {/* Stats */}
+      {/* status */}
       <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
         <StatCard
           title='Total Listings'
@@ -258,11 +258,11 @@ const MyListings = () => {
 
                       <button onClick={() => toggleStatus(listing.id)} className='p-2 border border-gray-200 rounded-lg
                           hover:bg-gray-50 hover:text-indigo-600'>
-                        {listing.status === "acitve" && (
+                        {listing.status === "active" && (
                           <EyeOffIcon className='size-4' />
                         )}
                         {listing.status
-                          !== "acitve" && (
+                          !== "active" && (
                             <EyeIcon className='size-4' />
                           )}
                       </button>

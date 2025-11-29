@@ -19,9 +19,44 @@ import CredentialChange from './pages/admin/CredentialChange'
 import CredentialVerify from './pages/admin/CredentialVerify'
 import Transactions from './pages/admin/Transactions'
 import Withdrawal from './pages/admin/Withdrawal'
+import { useAuth, useUser } from '@clerk/clerk-react'
+import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { getAllPublicListing, getAllUserListing } from './app/features/listingSlice.js'
+
 
 const App = () => {
   const { pathname } = useLocation()
+  const { getToken } = useAuth()
+  const { user, isLoaded } = useUser()
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(getAllPublicListing());
+  }, []);
+
+  useEffect(() => {
+    const fetchUserListings = async () => {
+      try {
+        if (isLoaded && user) {
+          const token = await getToken();
+
+          if (token) {
+            dispatch(getAllUserListing(token));
+          } else {
+            console.error("Token not found");
+          }
+        }
+      } catch (error) {
+        console.error("Failed to get token:", error);
+      }
+    };
+
+    fetchUserListings();
+  }, [isLoaded, user]);
+
+
   return (
     <div>
       <Toaster />
@@ -36,16 +71,16 @@ const App = () => {
         <Route path='/messages' element={<Messages />} />
         <Route path='/my-orders' element={<MyOrders />} />
         <Route path='/loading' element={<Loading />} />
-        <Route path='/admin' element={<Layout/>}>
+        <Route path='/admin' element={<Layout />}>
 
-        <Route index element={<Dashboard/>} />
-        <Route path='verify-credentials' element={<CredentialVerify/>} />
-        <Route path='change-credentials' element={<CredentialChange/>} />
-        <Route path='list-listings' element={< AllListings/>} />
-        <Route path='transactions' element={<Transactions/>} />
-        
-        <Route path='withdrawal' element={<Withdrawal/>} />
-        
+          <Route index element={<Dashboard />} />
+          <Route path='verify-credentials' element={<CredentialVerify />} />
+          <Route path='change-credentials' element={<CredentialChange />} />
+          <Route path='list-listings' element={< AllListings />} />
+          <Route path='transactions' element={<Transactions />} />
+
+          <Route path='withdrawal' element={<Withdrawal />} />
+
 
         </Route>
       </Routes>
