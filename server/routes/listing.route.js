@@ -14,6 +14,7 @@ import {
 } from "../controllers/listing.controller.js";
 
 import { protect } from "../middlewares/auth.middleware.js";
+import { attachPlan } from "../middlewares/attachPlan.js";
 import upload from "../configs/multer.js";
 
 const listingRouter = express.Router();
@@ -40,7 +41,7 @@ listingRouter.delete("/:listingId", protect, deleteUserListing);
 listingRouter.post("/add-credential", protect, addCredential);
 
 // FEATURED
-listingRouter.put("/featured/:id", protect, markFeatured);
+listingRouter.put("/featured/:id", protect, attachPlan, markFeatured);
 
 // USER ORDERS  (FIXED NAME)
 listingRouter.get("/user-orders", protect, getAllUserOrders);

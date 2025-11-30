@@ -15,6 +15,7 @@ model User {
     image     String
     earned    Float    @default(0)
     withdrawn Float    @default(0)
+    plan      String   @default("free") 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
