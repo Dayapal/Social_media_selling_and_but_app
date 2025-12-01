@@ -422,24 +422,42 @@ export const addCredential = async (req, res) => {
     const { userId } = await req.auth();
     const { listingId, credential } = req.body;
 
-    if (!listingId || !credential || String(credential).trim().length === 0) {
-      return res.status(400).json({ message: "Missing fields" });
+    // 1️⃣ Validate basic fields
+    if (!listingId || !credential || !Array.isArray(credential)) {
+      return res.status(400).json({ message: "Invalid credential format" });
     }
 
+    // 2️⃣ Validate each credential field
+    for (const c of credential) {
+      if (!c.name || !c.value) {
+        return res
+          .status(400)
+          .json({ message: `Missing name/value for a credential field` });
+      }
+    }
+
+    // 3️⃣ Validate listing ownership
     const listing = await prisma.listing.findUnique({
       where: { id: listingId },
     });
-    if (!listing) return res.status(404).json({ message: "Listing not found" });
-    if (listing.ownerId !== userId)
-      return res.status(403).json({ message: "Not the owner" });
 
+    if (!listing) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+
+    if (listing.ownerId !== userId) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    // 4️⃣ Save JSON directly (THIS FIXES YOUR ERROR)
     await prisma.credential.create({
       data: {
         listingId,
-        originalCredential: String(credential),
+        originalCredential: credential, // <-- JSON array, correct format
       },
     });
 
+    // 5️⃣ Mark listing updated
     await prisma.listing.update({
       where: { id: listingId },
       data: { isCredentialSubmitted: true },
@@ -448,13 +466,14 @@ export const addCredential = async (req, res) => {
     return res.json({ message: "Credential added successfully" });
   } catch (error) {
     console.error("addCredential error:", error);
-    return res
-      .status(500)
-      .json({
-        message: error?.code || error?.message || "Internal server error",
-      });
+    return res.status(500).json({
+      message: error?.message || "Internal server error",
+    });
   }
 };
+
+
+
 
 /**
  * Mark listing as featured (premium only, owner only)

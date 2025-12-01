@@ -1,7 +1,7 @@
 import React from "react";
 import { platformIcons } from "../assets/assets";
 import { BadgeCheck, LineChart, MapPin, User } from "lucide-react";
-import { isAllOf } from "@reduxjs/toolkit";
+
 import { useNavigate } from "react-router-dom";
 
 const ListingCard = ({ listing }) => {
