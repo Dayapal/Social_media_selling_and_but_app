@@ -3,11 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getProfileLink, platformIcons } from '../assets/assets';
 import { useDispatch, useSelector } from 'react-redux';
-import { ArrowLeftIcon,  ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSignIcon, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
+import { ArrowLeftIcon, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSignIcon, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
 import { setChat } from '../app/features/chatSlice';
+import { useUser } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
 
 const ListingDetails = () => {
-   const dispatch = useDispatch()
+  const { user, isLoaded } = useUser()
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const currency = import.meta.env.VITE_CURRENCY || '$';
   const [listing, setListing] = useState(null)
@@ -21,13 +24,22 @@ const ListingDetails = () => {
   const nextSlide = () => setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1))
 
 
-  const purchaseAccount = async() =>{
-    
-  }
-  const loadChatbox =() =>{
-    dispatch(setChat({listing:listing}))
+  const purchaseAccount = async () => {
 
   }
+
+  const loadChatbox = () => {
+    if (!isLoaded) return toast.error("Loading...");
+
+    if (!user) return toast.error("Please login to chat with seller");
+
+    if (!listing) return toast.error("Listing not found");
+
+    if (user.id === listing.ownerId)
+      return toast.error("You can't chat with your own listing");
+
+    dispatch(setChat({ listing }));
+  };
 
   useEffect(() => {
     const listing = listings.find((listing) => listing.id === listingId);
@@ -43,7 +55,7 @@ const ListingDetails = () => {
       </button>
       <div className='flex items-start max-md:flex-col gap-10'>
         <div className='flex-1 max-md:w-full'>
-          
+
           {/* Top Section  */}
 
           <div className='bg-white rounded-xl border border-gray-200 p-6 mb-5'>
@@ -259,21 +271,21 @@ const ListingDetails = () => {
             <MessageSquareMoreIcon className='size-4' />Chat
           </button>
           {listing.isCredentialChanged && (
-              <button onClick={purchaseAccount} className='w-full mt-2 bg-indigo-600 text-white py-2 rounded-lg
+            <button onClick={purchaseAccount} className='w-full mt-2 bg-indigo-600 text-white py-2 rounded-lg
           hover:bg-indigo-700 transition text-sm font-medium flex items-center justify-center gap-2'>
-            <ShoppingBagIcon className='size-4' />Purchase
-          </button>
+              <ShoppingBagIcon className='size-4' />Purchase
+            </button>
           )}
         </div>
       </div>
 
-       {/* Footer */}
-       <div className='bg-white border-t border-gray-200 p-4 text-center mt-28'>
+      {/* Footer */}
+      <div className='bg-white border-t border-gray-200 p-4 text-center mt-28'>
         <p className='text-sm text-gray-500'>
           c 2025 <span className='text-indigo-600'>Dedicated Daya Pal</span>. All rights reserved.
         </p>
 
-       </div>
+      </div>
     </div>
 
   ) : (
