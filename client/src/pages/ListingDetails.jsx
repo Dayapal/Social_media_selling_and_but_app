@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, } from 'react-router-dom'
 import { getProfileLink, platformIcons } from '../assets/assets';
 import { useDispatch, useSelector } from 'react-redux';
 import { ArrowLeftIcon, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSignIcon, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
 import { setChat } from '../app/features/chatSlice';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import toast from 'react-hot-toast';
 
 const ListingDetails = () => {
@@ -25,9 +25,9 @@ const ListingDetails = () => {
 
 
   const purchaseAccount = async () => {
-
+    const {token}  = useAuth()
+ 
   }
-
   const loadChatbox = () => {
     if (!isLoaded) return toast.error("Loading...");
 
@@ -48,6 +48,7 @@ const ListingDetails = () => {
     }
 
   }, [listingId, listings])
+
   return listing ? (
     <div className='mx-auto min-h-screen px-6 md:px-16 lg:px-24 xl:px-32'>
       <button onClick={() => navigate(-1)} className='flex items-center gap-2 text-slate-600 py-5'>
